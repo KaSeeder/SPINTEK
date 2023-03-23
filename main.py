@@ -1,4 +1,4 @@
-"""SPINTEK kodutöö Karl Erik Seeder 29.03.2022"""
+"""SPINTEK kodutöö Karl Erik Seeder 23.03.2023"""
 import csv
 import datetime
 import sys
@@ -18,7 +18,7 @@ class Homework:
     1. The task should be to make a CLI function, which takes an input (parameter - year)
     and outputs a table, where there is a date of the payday and reminder to the accountant
     (should be 12 lines in total and the table header)
-    2. The function has to write a CSV file (eg. 2022.csv)
+    2. The function has to write a CSV file (eg. 2023.csv)
     """
 
     def __init__(self, year: int):
@@ -52,6 +52,10 @@ class Homework:
         """Getter for the current day (Mon-Sun)"""
         return self.current_date.strftime("%A")
 
+    def get_accountant_day_string(self) -> datetime:
+        """Getter for the accountants date (day-month-day number)"""
+        return self.accountant_date.strftime("%A")
+
     def get_date_string(self) -> datetime:
         """Getter for the current date string (day-month-day number)"""
         return self.current_date.strftime("%A, %B %d")
@@ -79,12 +83,30 @@ class Homework:
         """Method to check if its a holiday or not"""
         return self.current_date in self.holidays
 
+    def is_accountant_workday(self) -> bool:
+        """Method to check if given day is a work day or not"""
+        return self.get_accountant_day_string() in self.work_days
+
+    def is_accountant_holiday(self) -> bool:
+        """Method to check if the day is a holiday or not"""
+        return self.accountant_date in self.holidays
+
+    def calculate_dates(self) -> None:
+        """Method which calculates the Workers salary date and the accountants notification date"""
+        date_list = []
+        while not self.is_workday() and not self.is_holiday():
+            self.go_back_a_day()
+        date_list.append(self.get_date_string())
+        while not self.is_accountant_workday() and not self.is_accountant_holiday():
+            self.go_back_a_day()
+        date_list.append(self.get_accountant_date_string())
+        self.csv.append(date_list)  # Add date to list
+
+
     def make_table(self) -> None:
         """Method to fill list with appropriate dates"""
-        for month in range(self.JANUARY_MONTH, self.DECEMBER_MONTH + 1):  # Add +1 cause range does not include last int
-            while not self.is_workday() and not self.is_holiday():
-                self.go_back_a_day()
-            self.csv.append([self.get_date_string(), self.get_accountant_date_string()])  # Add date to list
+        for month in range(self.JANUARY_MONTH, self.DECEMBER_MONTH + 1):# Add +1 cause range does not include last int
+            self.calculate_dates()
             if month < self.DECEMBER_MONTH:  # If it's not December move on to the next month
                 self.move_to_next_month()
 

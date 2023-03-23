@@ -1,10 +1,13 @@
-"""SPINTEK kodutöö Karl Erik Seeder 29.03.2022"""
+"""SPINTEK kodutöö Karl Erik Seeder 23.03.2023"""
 
 import csv
 import datetime
 import sys
 
 import holidays
+
+
+# Efficiency based code
 
 if len(sys.argv) > 1:
     year = int(sys.argv[1])
@@ -24,5 +27,10 @@ with open(str(year) + ".csv", "w", newline='', encoding='UTF8') as csv_file:
         while date.weekday() > 4 or date in holidays:
             day -= 1
             date = datetime.date(year, month, day)
+        day = day - 3
+        secretary_date = datetime.date(year, month, day)
+        while secretary_date.weekday() > 4 or secretary_date in holidays:
+            day -= 1
+            secretary_date = datetime.date(year, month, day)
 
-        csv_writer.writerow([date, date - datetime.timedelta(3)])
+        csv_writer.writerow([date, secretary_date])
